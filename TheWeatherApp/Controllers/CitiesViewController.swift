@@ -93,6 +93,9 @@ class CitiesViewController: UITableViewController {
         // Configure the cell...
         let citiesWeather = citiesWeatherList[indexPath.row]
         cell.textLabel?.text = citiesWeather.city.name
+        if let weatherCell = cell as? CityTableViewCell {
+            weatherCell.weatherImageView.image = UIImage.init(named: "Cloud")
+        }
 
         return cell
     }

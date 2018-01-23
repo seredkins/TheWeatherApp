@@ -19,14 +19,28 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="reuseIdentifier" id="fMq-d8-UfU">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="reuseIdentifier" id="fMq-d8-UfU" customClass="CityTableViewCell" customModule="TheWeatherApp" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="fMq-d8-UfU" id="TaR-Ce-lYA">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="oVJ-le-gMk">
+                                            <rect key="frame" x="165" y="-1" width="44" height="44"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="44" id="Rjo-EX-QSW"/>
+                                                <constraint firstAttribute="height" constant="44" id="ypR-G2-Bch"/>
+                                            </constraints>
+                                        </imageView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="oVJ-le-gMk" firstAttribute="centerX" secondItem="TaR-Ce-lYA" secondAttribute="centerX" id="2b3-r5-6hp"/>
+                                        <constraint firstItem="oVJ-le-gMk" firstAttribute="centerY" secondItem="TaR-Ce-lYA" secondAttribute="centerY" id="4Ur-Qr-ow4"/>
+                                    </constraints>
                                 </tableViewCellContentView>
                                 <connections>
+                                    <outlet property="weatherImageView" destination="oVJ-le-gMk" id="cib-Fw-ue8"/>
                                     <segue destination="MRh-js-nlR" kind="show" id="syM-kY-Tsg"/>
                                 </connections>
                             </tableViewCell>
@@ -39,7 +53,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Yig-94-zLB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="188" y="119"/>
+            <point key="canvasLocation" x="188" y="118.29085457271366"/>
         </scene>
         <!--Day View Controller-->
         <scene sceneID="sja-9K-80D">
