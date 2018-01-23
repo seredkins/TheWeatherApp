@@ -13,20 +13,64 @@ class CitiesViewController: UITableViewController {
     var citiesWeatherList = [WeatherForecast]()
 
     override func viewDidLoad() {
-        citiesWeatherList.append(WeatherForecast(city: "Moscow", weather: Dictionary<String, String>()))
         super.viewDidLoad()
+        
+        refreshControl = UIRefreshControl()
+        refreshControl?.attributedTitle = NSAttributedString(string: "Refreshing...")
+        refreshControl?.addTarget(self, action: #selector(doRequest), for: .valueChanged)
+        
+        let searchBar = UISearchBar()
+        searchBar.delegate = self
+        tableView.tableHeaderView = searchBar
+        searchBar.sizeToFit()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        addCity(city: "Moscow")
+        doRequest()
+    }
+    
+    func addCity(city: String) {
+        let forecast = WeatherForecast(name: city)//, weather: Dictionary<String, String>())
+        citiesWeatherList.append(forecast)
+        
+//        let alert = UIAlertController.init(title: city, message: "City added", preferredStyle: .alert)
+//        let action = UIAlertAction.init(title: "Ok", style: .default)
+//        alert.addAction(action)
+//        present(alert, animated: true, completion: nil)
+        
+        tableView.reloadData()
+    }
+    
+    @objc func doRequest() {
         let session = URLSession.shared
         for cityWeather in citiesWeatherList {
-            guard let url = URL(string: "http://api.openweathermap.org/data/2.5/forecast?q=Moscow&unit=metric&lang=ru&APPID=35471c8f32e8bc6e41efe48676d4c84a") else { return }
+            guard let url = URL(string: "http://api.openweathermap.org/data/2.5/forecast?q=\(cityWeather.city.name)&unit=metric&lang=ru&APPID=35471c8f32e8bc6e41efe48676d4c84a") else { return }
             let dataTask = session.dataTask(with: url) { (data: Data?, response: URLResponse?, error: Error?) in
+                DispatchQueue.main.async {
+                    self.refreshControl?.endRefreshing()
+                }
                 guard let httpResponse  = response as? HTTPURLResponse,
                     httpResponse.statusCode == 200,
                     error == nil, let data = data else {
-                        print("Error")
+                        print("Error: \(error?.localizedDescription ?? "")")
                         return
                 }
-                print("DataResponce: \(data)")
+                print("DataResponse: \(data)")
+                
+                guard let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments),
+                    let jsonDictionary = json as? [String: Any] else { return }
+                
+                if let city = jsonDictionary["city"] as? [String: Any], let name = city["name"] as? String {
+                    print("name: \(name)")
+                }
+                
+//                guard let weatherForecast = try? JSONDecoder().decode(WeatherForecast.self, from: data) else { return }
+//                print("weatherForecast: \(weatherForecast)")
             }
+            dataTask.resume()
         }
     }
 
@@ -47,54 +91,16 @@ class CitiesViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
 
         // Configure the cell...
+        let citiesWeather = citiesWeatherList[indexPath.row]
+        cell.textLabel?.text = citiesWeather.city.name
 
         return cell
     }
- 
+}
 
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
+extension CitiesViewController : UISearchBarDelegate {
+    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        print("searchBar: \(searchBar.text ?? "")")
+        searchBar.resignFirstResponder()
     }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

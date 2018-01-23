@@ -8,12 +8,26 @@
 
 import Foundation
 
-class WeatherForecast {
-    init(city: String, weather: Dictionary<String, String>) {
-        self.city = city
-        self.weather = weather
+struct WeatherForecast : Decodable {
+    enum MyStructKeys: String, CodingKey {
+        case name = "name"
     }
     
-    let city: String
-    let weather: Dictionary<String, String>
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: MyStructKeys.self)
+        let cityName: String = try container.decode(String.self, forKey: .name)
+        
+        self.init(name: cityName)
+    }
+    init(name: String) {
+        city = City(cityName: name)
+    }
+    struct City {
+        init(cityName: String) {
+            name = cityName
+        }
+        let name: String
+    }
+    let city: City
+//    let list: Dictionary<String, String>
 }
